@@ -3,7 +3,8 @@
 {% block title %}Список получателей{% endblock %}
 
 {% block content %}
-<h2>Список получателей</h2>
+
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -14,15 +15,17 @@
         </tr>
     </thead>
     <tbody>
-        {% for recipient in recipients %}
+        {% for recipient in objects_list %}
         <tr>
             <td>{{ recipient.fio }}</td>
             <td>{{ recipient.email }}</td>
             <td>{{ recipient.comment }}</td>
             <td> Кнопки  </td>
         </tr>
+        {% empty %}
+        <p>Нет получателей</p>
         {% endfor %}
     </tbody>
-<a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_create' %}">Добавить продукт</a>
+<a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_create' %}">Добавить получателей</a>
 </table>
 {% endblock %}
