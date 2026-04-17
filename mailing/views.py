@@ -8,28 +8,28 @@ from django.urls import reverse_lazy
 # Recipient views
 class RecipientListView(generic.ListView):
     model = Recipient
-    template_name = "recipient_list.html"
+    template_name = "mailing/recipient_list.html"
     context_object_name = "recipients"
 
 
 class RecipientDetailView(generic.DetailView):
     model = Recipient
-    template_name = "recipient_detail.html"
+    template_name = "mailing/recipient_detail.html"
 
 
 class RecipientCreateView(generic.CreateView):
     model = Recipient
     form_class = RecipientForm
     template_name = "mailing/recipient_create.html"
-    success_url = reverse_lazy("mailing:home")
+    success_url = reverse_lazy("mailing/recipient_list")
 
 
 # Message views
 class MessageList(generic.ListView):
     model = Message
-    template_name = "message_list.html"
+    template_name = "mailing/message_list.html"
 
 
 class HomeView(generic.TemplateView):
-    template_name = "home.html"
+    template_name = "mailing/home.html"
 

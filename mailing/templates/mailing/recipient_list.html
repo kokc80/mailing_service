@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'mailing/base.html' %}
 
 {% block title %}Список получателей{% endblock %}
 
@@ -15,7 +15,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for recipient in objects_list %}
+        {% for recipient in recipients %}
         <tr>
             <td>{{ recipient.fio }}</td>
             <td>{{ recipient.email }}</td>
