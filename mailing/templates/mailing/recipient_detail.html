@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- student_detail.html -->
+{% extends 'base.html' %}
+{% block title %}Детали пользователя{% endblock %}
+
+{% block content %}
+    <p align="center"><b>ФИО пользователя</b><br></p>
+    <p align="center">{{object.fio}}</p>
+    <p align="center"> <b>E-mail</b><br></p>
+    <p align="center">{{object.email}}</p>
+    <p align="center"> <b>Комментарий</b><br></p>
+    <p align="center">{{object.comment}}</p>
+    <p align="center"><a class="btn btn-primary" href="{% url 'mailing:recipient_list' %}" role="button">К списку продукции</a></p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="container mt-5">
+        <h1 class="mb-4">Добавить получателя рассылки</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{% url 'mailing:recipient_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+</div>
+{% endblock %}
