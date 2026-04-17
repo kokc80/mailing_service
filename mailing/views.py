@@ -14,22 +14,22 @@ class RecipientListView(generic.ListView):
 
 class RecipientDetailView(generic.DetailView):
     model = Recipient
-    template_name = "mailing/recipient_detail.html"
+    template_name = "recipient_detail.html"
 
 
 class RecipientCreateView(generic.CreateView):
     model = Recipient
     form_class = RecipientForm
     template_name = "mailing/recipient_create.html"
-    success_url = reverse_lazy("mailing/recipient_list")
+    success_url = reverse_lazy("recipient_list")
 
 
 # Message views
 class MessageList(generic.ListView):
     model = Message
-    template_name = "mailing/message_list.html"
+    template_name = "message_list.html"
 
 
 class HomeView(generic.TemplateView):
-    template_name = "mailing/home.html"
+    template_name = "home.html"
 
