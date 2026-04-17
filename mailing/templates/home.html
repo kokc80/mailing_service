@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h1>Добро пожаловать в Mailing App</h1>
+<p>
+    Посмотреть условие при отсутствии получателей рассылки
+    <a href="{% url 'mailing:recipient_list' %}" class="btn btn-primary">Перейти к получателям</a>
+</p>
+{% endblock %}
