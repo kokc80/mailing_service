@@ -13,3 +13,5 @@ class RecipientForm(forms.ModelForm):
         self.fields["email"].widget.attrs.update({"class": "form-control", "placeholder": "Введите e-mail:"})
         self.fields["fio"].widget.attrs.update({"class": "form-control", "placeholder": "Введите ФИО:"})
         self.fields["comment"].widget.attrs.update({"class": "form-control", "placeholder": "Введите комментарий:"})
+
+# 20260417 проект4
