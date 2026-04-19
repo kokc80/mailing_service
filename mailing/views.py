@@ -21,7 +21,7 @@ class RecipientCreateView(generic.CreateView):
     model = Recipient
     form_class = RecipientForm
     template_name = "mailing/recipient_create.html"
-    success_url = reverse_lazy("recipient_list")
+    success_url = reverse_lazy("mailing:recipient_list")
 
 
 # Message views
