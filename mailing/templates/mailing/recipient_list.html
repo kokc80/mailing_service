@@ -15,14 +15,15 @@
     </thead>
     <tbody>
         {% for recipient in recipients %}
-        <tr>
-            <td>{{ recipient.fio }}</td>
-            <td>{{ recipient.email }}</td>
-            <td>{{ recipient.comment }}</td>
-            <td> Кнопки  </td>
-        </tr>
-        {% empty %}
-        <p>Нет получателей</p>
+            <tr>
+                <td>{{ recipient.fio }}</td>
+                <td>{{ recipient.email }}</td>
+                <td>{{ recipient.comment }}</td>
+                <td> Кнопки  </td>
+            </tr>
+            {% if empty %}
+                <p>Нет получателей</p>
+            {% endif %}
         {% endfor %}
     </tbody>
 <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_create' %}">Добавить получателей</a>
