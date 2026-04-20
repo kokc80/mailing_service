@@ -30,7 +30,7 @@ class RecipientCreateView(generic.CreateView):
 
 
 # Message views
-@method_decorator(cache_page(60 * 15), name="dispatch")
+# @method_decorator(cache_page(60 * 15), name="dispatch")
 class MessageListView(LoginRequiredMixin, ListView):
     """Отображение списка сообщений"""
 
@@ -54,7 +54,7 @@ class MessageListView(LoginRequiredMixin, ListView):
         queryset = cache.get("my_message_list")
         if not queryset:
             queryset = Message.objects.all()
-            cache.set("my_message_list", queryset, 60 * 15)
+            # cache.set("my_message_list", queryset, 60 * 15)
         return queryset
 
 
