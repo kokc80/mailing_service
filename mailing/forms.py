@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Recipient, Mailing
+from .models import Recipient, Mailing, Message
 
 
 class RecipientForm(forms.ModelForm):
@@ -46,3 +46,10 @@ class MailingForm(forms.ModelForm):
                 "placeholder": "Введите дату и время конца отправки в формате YYYY-MM-DD HH:MM",
             }
         )
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['subject', 'body']
+

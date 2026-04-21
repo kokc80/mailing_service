@@ -21,8 +21,6 @@ from .views import (
     UserProfileView,
     UsersListView,
     VerifyView,
-    UsersListView
-
 )
 
 # Пространство имен(помогает избежать ошибки при одинаковых именах маршрута)

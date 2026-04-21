@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import CustomUser
+from datetime import datetime, time
 
 
 # класс получателей
@@ -50,7 +51,7 @@ class Mailing(models.Model):
         Message,
         on_delete=models.CASCADE,
         verbose_name="Сообщение",
-        related_name="campaignes",
+        related_name="mailing",
     )
     recipients = models.ManyToManyField(Recipient, related_name="campaigns", verbose_name="Получатели")
     start_time = models.DateTimeField(verbose_name="Дата и время начала отправки", blank=False, null=False)

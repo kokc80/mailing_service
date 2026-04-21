@@ -161,3 +161,4 @@ class UserPasswordChangeForm(PasswordChangeForm):
         label="Подтверждение пароля",
         widget=forms.PasswordInput(attrs={"class": "form-input"}),
     )
+

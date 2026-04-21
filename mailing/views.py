@@ -1,25 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import generic
-from django.views.generic import DetailView, ListView, TemplateView, CreateView
+from django.views.generic import DetailView, ListView, TemplateView, CreateView, View, DeleteView
 from mailing.models import Recipient, Message, Mailing
-from mailing.forms import RecipientForm
+from mailing.forms import RecipientForm, MailingForm
 from django.urls import reverse_lazy
+from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-
+from users.models import CustomUser
+from .forms import MessageForm
 
 # Create your views here.
-# Recipient views
+
+
+class HomeView(generic.TemplateView):
+    template_name = "home.html"
+
+
 class RecipientListView(generic.ListView):
     model = Recipient
     template_name = "mailing/recipient_list.html"
     context_object_name = "recipients"
-
-
-class RecipientDetailView(generic.DetailView):
-    model = Recipient
-    template_name = "recipient_detail.html"
 
 
 class RecipientCreateView(generic.CreateView):
@@ -29,53 +31,87 @@ class RecipientCreateView(generic.CreateView):
     success_url = reverse_lazy("mailing:recipient_list")
 
 
-# Message views
+class RecipientUpdateView(generic.UpdateView):
+    model = Recipient
+    form_class = RecipientForm
+    template_name = 'mailing/recipient_form.html'
+    success_url = reverse_lazy('mailing:recipient_list')
+
+
+class RecipientDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Удаление получателя"""
+    model = Recipient
+    template_name = "mailing/recipient_confirm_delete.html"
+    success_url = reverse_lazy("mailing:recipient_list")
+
+    def test_func(self):
+        recipient = self.get_object()
+        return self.request.user == recipient.owner
+
+
+class MailingBreakAllView(View):
+    """Отключение рассылок"""
+
+    def post(self, request):
+        mailings = Mailing.objects.all()
+        for mailing in mailings:
+            mailing.status_active = False
+            print("Статус изменен")
+            mailing.save()
+        print("Рассылка выключена")
+        return redirect("mailing:mailing_list")
+
+
 # @method_decorator(cache_page(60 * 15), name="dispatch")
-class MessageListView(LoginRequiredMixin, ListView):
-    """Отображение списка сообщений"""
+class MailingView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """Отображение главной страницы"""
 
-    model = Message
-    template_name = "mailing/message_list.html"
-    context_object_name = "messages"
+    model = Mailing
+    template_name = "mailing/home.html"
+    context_object_name = "mailings"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["count"] = self.get_count()
-        return context
+    def get(self, request):
+        mailings = self.get_user_mailings()
+        recipients = self.get_user_recipients()
+        active_mailings = mailings.filter(status="Запущена").count()
 
-    def get_count(self):
-        messages = self.get_queryset()
-        if messages is not None:
-            count = 0
-            for message in messages:
-                count += 1
-            return count
+        if not self.request.user.groups.filter(name="Менеджер").exists():
+            unique_recipients = recipients.filter(owner=self.request.user).count()
+        else:
+            unique_recipients = recipients.all().count()
 
-    def get_queryset(self):
-       # queryset = cache.get("my_message_list")
-       # if not queryset:
-        queryset = Message.objects.all()
-            # cache.set("my_message_list", queryset, 60 * 15)
-        # return queryset
+        context = {
+            "recipients": mailings,
+            "total_mailings": mailings.count(),
+            "active_mailings": active_mailings,
+            "unique_recipients_count": unique_recipients,
+            "is_manager": self.request.user.is_staff or self.request.user.groups.filter(name="Менеджер").exists(),
+            "users_count": CustomUser.objects.all().count(),
+        }
+        return render(request, self.template_name, context)
 
+    def get_user_mailings(self):
+        """Получение рассылок пользователя"""
+        if self.request.user.groups.filter(name="Менеджер").exists():
+            return Mailing.objects.all()
+        else:
+            return Mailing.objects.filter(owner=self.request.user)
 
-class MessageCreateView(LoginRequiredMixin, CreateView):
-    """Создание сообщения"""
-    model = Message
-    template_name = "mailing/message_form.html"
-    fields = ["subject", "body"]
-    success_url = reverse_lazy("mailing:message_list")
+    def get_user_subscribers(self):
+        """Получение получателей пользователя"""
+        if self.request.user.groups.filter(name="Менеджер").exists():
+            return Recipient.objects.all()
+        else:
+            return Recipient.objects.filter(owner=self.request.user)
 
-
-class HomeView(generic.TemplateView):
-    template_name = "home.html"
+    def test_func(self):
+        return True
 
 
 class MailingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """Отображение списка рассылок"""
-
     model = Mailing
-    template_name = "mailing/campaign_list.html"
+    template_name = "mailing/mailing_list.html"
     context_object_name = "mailings"
 
     def get_queryset(self):
@@ -104,10 +140,111 @@ class MailingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_count(self):
         """Получение количества рассылок"""
         mailings = self.get_queryset()
-        if mailings is not None:
-            return mailings.count()
+        if not mailings:
+            return 0
         else:
-            return  0
+            return mailings.count()
 
     def test_func(self):
         return True
+
+
+class MailingCreateView(LoginRequiredMixin, CreateView):
+    """Создание новой рассылки"""
+
+    form_class = MailingForm
+    template_name = "mailing/mailing_form.html"
+    success_url = reverse_lazy("mailing:mailing_list")
+
+    def get(self, request, *args, **kwargs):
+        form = self.get_form()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        # Логика для создания новой рассылки
+        form = self.get_form()
+        if form.is_valid():
+            status_active = Mailing.objects.filter(
+                status_active=True
+            ).exists()  # Проверяем, есть ли активные рассылки
+            new_mailing = form.save(commit=False)
+            new_mailing.status_active = status_active
+            new_mailing.owner = request.user
+            new_mailing.save()
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+
+@method_decorator(cache_page(60 * 15), name="dispatch")
+class MessageDetailView(LoginRequiredMixin, DetailView):
+    """Подробная информация о сообщении"""
+
+    model = Message
+    template_name = "mailing/message_detail.html"
+    context_object_name = "message"
+
+    def get_context_data(self, **kwargs):
+        # Получаем контекст от родительского класса
+        context = super().get_context_data(**kwargs)
+        context["is_manager"] = (
+                self.request.user.is_staff or self.request.user.groups.filter(name="Менеджеры").exists()
+        )
+        # Получаем сообщение из контекста
+        message = self.object
+
+        return context
+
+
+class MessageCreateView(LoginRequiredMixin, CreateView):
+    """Создание сообщения"""
+    model = Message
+    template_name = "mailing/message_form.html"
+    fields = ["subject", "body"]
+    success_url = reverse_lazy("mailing:message_list")
+
+class MessageUpdateView(generic.UpdateView):
+    model = Message
+    form_class = MessageForm
+    template_name = 'message_form.html'
+    success_url = reverse_lazy('message_list')
+
+# @method_decorator(cache_page(60 * 15), name="dispatch")
+class MessageListView(LoginRequiredMixin, ListView):
+    """Отображение списка сообщений"""
+
+    model = Message
+    template_name = "mailing/message_list.html"
+    context_object_name = "messages"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["count"] = self.get_count()
+        return context
+
+    def get_count(self):
+        messages = self.get_queryset()
+        if messages is not None:
+            count = 0
+            for message in messages:
+                count += 1
+            return count
+
+    def get_queryset(self):
+       queryset = cache.get("my_message_list")
+       if not queryset:
+           queryset = Message.objects.all()
+           cache.set("my_message_list", queryset, 60 * 15)
+           return queryset
+
+
+class MessageDeleteView(generic.DeleteView):
+    model = Message
+    template_name = 'message_confirm_delete.html'
+    success_url = reverse_lazy('message_list')
