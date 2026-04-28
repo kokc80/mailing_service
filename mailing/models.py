@@ -1,15 +1,17 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import CustomUser
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 
 
-# класс получателей
+
+
+# модель получателей
 class Recipient(models.Model):
     email = models.CharField(max_length=20, verbose_name="E-mail", unique=True)
     fio = models.CharField(max_length=150, verbose_name="Ф.И.О.")
     comment = models.TextField(verbose_name="Комментарий")
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="subscriber_owner", default=1)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="recipient_owner", default=1)
 
     def __str__(self):
         return self.fio
@@ -18,7 +20,7 @@ class Recipient(models.Model):
         ordering = ["email"]
 
 
-# класс сообщений
+# модель сообщений
 class Message(models.Model):
     subject = models.CharField(max_length=255)
     body = models.TextField()
@@ -29,7 +31,7 @@ class Message(models.Model):
         return self.subject
 
 
-# класс рассылки
+# модель рассылки
 class Mailing(models.Model):
     """Модель «Рассылка»"""
     STATUS_CHOICES = [

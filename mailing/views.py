@@ -63,8 +63,9 @@ class MailingBreakAllView(View):
         print("Рассылка выключена")
         return redirect("mailing:mailing_list")
 
+cachetime1 = 10 # 60*5 1
 
-@method_decorator(cache_page(60 * 5), name="dispatch")
+@method_decorator(cache_page(cachetime1), name="dispatch")
 class MailingView(LoginRequiredMixin, UserPassesTestMixin, View):
     """Список рассылок основная страница"""
     model = Mailing
@@ -183,7 +184,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
 
-@method_decorator(cache_page(60 * 5), name="dispatch")
+@method_decorator(cache_page(cachetime1), name="dispatch")
 class MessageDetailView(LoginRequiredMixin, DetailView):
     """Подробная информация о сообщении"""
 
@@ -219,7 +220,7 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("mailing:message_list")
 
 
-@method_decorator(cache_page(60 * 5), name="dispatch")
+@method_decorator(cache_page(cachetime1), name="dispatch")
 class MessageListView(LoginRequiredMixin, ListView):
     """Отображение списка сообщений"""
 
@@ -244,7 +245,7 @@ class MessageListView(LoginRequiredMixin, ListView):
        queryset = cache.get("my_message_list")
        if not queryset:
            queryset = Message.objects.all()
-           cache.set("my_message_list", queryset, 60 * 1)
+           cache.set("my_message_list", queryset, cachetime1)
            return queryset
 
 
