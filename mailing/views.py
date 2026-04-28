@@ -99,7 +99,7 @@ class MailingView(LoginRequiredMixin, UserPassesTestMixin, View):
         else:
             return Mailing.objects.filter(owner=self.request.user)
 
-    def get_user_subscribers(self):
+    def get_user_recipients(self):
         """Получение получателей пользователя"""
         if self.request.user.groups.filter(name="Менеджер").exists():
             return Recipient.objects.all()
@@ -173,7 +173,6 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
             new_mailing.status_active = status_active
             new_mailing.owner = request.user
             new_mailing.save()
-
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
