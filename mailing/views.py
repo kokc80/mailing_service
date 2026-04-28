@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import generic
-from django.views.generic import DetailView, ListView, TemplateView, CreateView, View, DeleteView
+from django.views.generic import DetailView, ListView, TemplateView, CreateView, View, DeleteView, UpdateView
 from mailing.models import Recipient, Message, Mailing
 from mailing.forms import RecipientForm, MailingForm
 from django.urls import reverse_lazy
@@ -19,12 +19,14 @@ class HomeView(generic.TemplateView):
 
 
 class RecipientListView(generic.ListView):
+    """Список получателей"""
     model = Recipient
     template_name = "mailing/recipient_list.html"
     context_object_name = "recipients"
 
 
 class RecipientCreateView(generic.CreateView):
+    """Добавление получателя"""
     model = Recipient
     form_class = RecipientForm
     template_name = "mailing/recipient_create.html"
@@ -32,6 +34,7 @@ class RecipientCreateView(generic.CreateView):
 
 
 class RecipientUpdateView(generic.UpdateView):
+    """Редактирование получателя"""
     model = Recipient
     form_class = RecipientForm
     template_name = 'mailing/recipient_form.html'
@@ -51,7 +54,6 @@ class RecipientDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class MailingBreakAllView(View):
     """Отключение рассылок"""
-
     def post(self, request):
         mailings = Mailing.objects.all()
         for mailing in mailings:
@@ -62,10 +64,9 @@ class MailingBreakAllView(View):
         return redirect("mailing:mailing_list")
 
 
-# @method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class MailingView(LoginRequiredMixin, UserPassesTestMixin, View):
-    """Отображение главной страницы"""
-
+    """Список рассылок основная страница"""
     model = Mailing
     template_name = "mailing/home.html"
     context_object_name = "mailings"
@@ -109,7 +110,7 @@ class MailingView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class MailingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    """Отображение списка рассылок"""
+    """Список рассылок"""
     model = Mailing
     template_name = "mailing/mailing_list.html"
     context_object_name = "mailings"
@@ -182,7 +183,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class MessageDetailView(LoginRequiredMixin, DetailView):
     """Подробная информация о сообщении"""
 
@@ -209,13 +210,16 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     fields = ["subject", "body"]
     success_url = reverse_lazy("mailing:message_list")
 
-class MessageUpdateView(generic.UpdateView):
-    model = Message
-    form_class = MessageForm
-    template_name = 'message_form.html'
-    success_url = reverse_lazy('message_list')
 
-# @method_decorator(cache_page(60 * 15), name="dispatch")
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
+    """Обновление сообщения"""
+    model = Message
+    fields = ["subject", "body"]
+    template_name = "mailing/message_form.html"
+    success_url = reverse_lazy("mailing:message_list")
+
+
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class MessageListView(LoginRequiredMixin, ListView):
     """Отображение списка сообщений"""
 
@@ -240,11 +244,11 @@ class MessageListView(LoginRequiredMixin, ListView):
        queryset = cache.get("my_message_list")
        if not queryset:
            queryset = Message.objects.all()
-           cache.set("my_message_list", queryset, 60 * 15)
+           cache.set("my_message_list", queryset, 60 * 1)
            return queryset
 
 
 class MessageDeleteView(generic.DeleteView):
     model = Message
-    template_name = 'message_confirm_delete.html'
-    success_url = reverse_lazy('message_list')
+    template_name = 'mailing/message_confirm_delete.html'
+    success_url = reverse_lazy('mailing:message_list')

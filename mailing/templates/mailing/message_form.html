@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container mt-5">
         <h3 class="mb-3">Форма для сообщения</h3>
-        <form method="post" enctype="multipart/form-data" action="{% if message %}{% url 'mailing:message_edit' message.pk %}{% else %}{% url 'mailing:message_create' %}{% endif %}">
+        <form method="post" enctype="multipart/form-data" action="{% if message %}{% url 'mailing:message_update' message.pk %}{% else %}{% url 'mailing:message_create' %}{% endif %}">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Сохранить</button>
