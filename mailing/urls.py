@@ -21,7 +21,7 @@ urlpatterns = [
     path('recipients/update/<int:pk>/', RecipientUpdateView.as_view(), name='recipient_update'),
     path('recipients/delete/<int:pk>/', RecipientDeleteView.as_view(), name='recipient_delete'),
     # сообщения
-    path("messages/", MessageListView.as_view(), name="message_list"),
+    path("message_list/", MessageListView.as_view(), name="message_list"),
     path("message/new/", MessageCreateView.as_view(), name="message_create"),
     path("message/<int:pk>/", MessageDetailView.as_view(), name="message_detail"),
     path('messages/update/<int:pk>/', MessageUpdateView.as_view(), name='message_update'),
