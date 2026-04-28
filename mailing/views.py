@@ -166,9 +166,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         # Логика для создания новой рассылки
         form = self.get_form()
         if form.is_valid():
-            status_active = Mailing.objects.filter(
-                status_active=True
-            ).exists()  # Проверяем, есть ли активные рассылки
+            status_active = Mailing.objects.filter(status_active=True).exists()  # Проверяем, есть ли активные рассылки
             new_mailing = form.save(commit=False)
             new_mailing.status_active = status_active
             new_mailing.owner = request.user
