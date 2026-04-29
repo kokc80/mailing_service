@@ -55,19 +55,20 @@ class Mailing(models.Model):
         verbose_name="Сообщение",
         related_name="mailing",
     )
-    recipients = models.ManyToManyField(Recipient, related_name="campaigns", verbose_name="Получатели")
+    recipients = models.ManyToManyField(Recipient, related_name="recipients", verbose_name="Получатели")
     start_time = models.DateTimeField(verbose_name="Дата и время начала отправки", blank=False, null=False)
     first_sent_at = models.DateTimeField(verbose_name="Дата и время первой отправки", blank=True, null=True)
     end_time = models.DateTimeField(verbose_name="Дата и время окончания отправки", blank=False, null=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Создана", verbose_name="Статус")
 
     status_active = models.BooleanField(verbose_name="Возможность рассылки", default=True)
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="campaign_owner", default=1)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="mailingr", default=1)
 
 
     def save(self, *args, **kwargs):
+        self.clean()
         if self.pk is None:
-            self.status_active = Campaign.objects.filter(status_active=True).exists()
+            self.status_active = Mailing.objects.filter(status_active=True).exists()
 
         super().save(*args, **kwargs)
 
@@ -81,11 +82,6 @@ class Mailing(models.Model):
 
         if self.start_time >= self.end_time:
             raise ValidationError("Время начала должно быть меньше времени окончания.")
-
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
 
 
     def update_status(self):

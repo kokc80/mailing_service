@@ -158,27 +158,16 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     template_name = "mailing/mailing_form.html"
     success_url = reverse_lazy("mailing:mailing_list")
 
-    def get(self, request, *args, **kwargs):
-        form = self.get_form()
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request, *args, **kwargs):
-        # Логика для создания новой рассылки
-        form = self.get_form()
-        if form.is_valid():
-            status_active = Mailing.objects.filter(status_active=True).exists()  # Проверяем, есть ли активные рассылки
-            new_mailing = form.save(commit=False)
-            new_mailing.status_active = status_active
-            new_mailing.owner = request.user
-            new_mailing.save()
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["user"] = self.request.user
         return kwargs
+
+    def cleaen(self,**kwargs):
+        kwargs["user"] = self.request.user
+        user = kwargs.pop("user", None)
+        if user:
+            self.fields["recipients"].queryset = Recipient.objects.filter(owner=user)
+
 
 
 @method_decorator(cache_page(cachetime1), name="dispatch")

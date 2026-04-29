@@ -22,11 +22,7 @@ class MailingForm(forms.ModelForm):
         fields = ["message", "recipients", "start_time", "end_time"]
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
         super(MailingForm, self).__init__(*args, **kwargs)
-
-        if user:
-            self.fields["recipients"].queryset = Recipient.objects.filter(owner=user)
 
         self.fields["message"].widget.attrs.update({"class": "form-control", "placeholder": "Выберите сообщение"})
 
