@@ -63,7 +63,7 @@ class MailingBreakAllView(View):
         print("Рассылка выключена")
         return redirect("mailing:mailing_list")
 
-cachetime1 = 10 # 60*5 1
+cachetime1 = 10 # 60*5 1;
 
 @method_decorator(cache_page(cachetime1), name="dispatch")
 class MailingView(LoginRequiredMixin, UserPassesTestMixin, View):
