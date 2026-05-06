@@ -57,8 +57,8 @@ class MailingForm(forms.ModelForm):
         if not self.fields["end_time"] and not isinstance(self.fields["end_time"], datetime):
             raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
 
-        if self.fields["start_time"] > self.fields["end_time"]:
-            raise ValidationError("Время начала должно быть меньше времени окончания.")
+        # if self.fields["start_time"] > self.fields["end_time"]:
+        #     raise ValidationError("Время начала должно быть меньше времени окончания.")
 
 class MessageForm(forms.ModelForm):
     class Meta:

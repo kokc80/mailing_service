@@ -14,7 +14,7 @@ urlpatterns = [
     # рассылки
     path("mailings/break/", MailingBreakAllView.as_view(), name="mailing_break"),
     path("mailings/all/", MailingListView.as_view(), name="mailing_list"),
-    path("mailing/new/", MailingCreateView.as_view(), name="mailing_create"),
+    path("mailings/create/", MailingCreateView.as_view(), name="mailing_create"),
     # получатели
     path("recipient_list/", RecipientListView.as_view(), name="recipient_list"),
     path("recipient_create/", RecipientCreateView.as_view(), name="recipient_create"),
@@ -22,8 +22,8 @@ urlpatterns = [
     path('recipients/delete/<int:pk>/', RecipientDeleteView.as_view(), name='recipient_delete'),
     # сообщения
     path("message_list/", MessageListView.as_view(), name="message_list"),
-    path("message/new/", MessageCreateView.as_view(), name="message_create"),
-    path("message/<int:pk>/", MessageDetailView.as_view(), name="message_detail"),
+    path('messages/', MessageListView.as_view(), name='message_list'),
+    path('messages/create/', MessageCreateView.as_view(), name='message_create'),
     path('messages/update/<int:pk>/', MessageUpdateView.as_view(), name='message_update'),
     path('messages/delete/<int:pk>/', MessageDeleteView.as_view(), name='message_delete'),
 

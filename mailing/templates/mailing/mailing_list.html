@@ -1,56 +1,29 @@
 {% extends 'base.html' %}
 
-{% block title %} Рассылки {% endblock %}
+{% block title %}Список сообщений{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-12">
-            <a href="{% url 'mailing:mailing_create' %}" class="mt-3 w-100 text-dark btn btn-outline-light border border-secondary-subtle">Создать новую рассылку</a>
-        </div>
-        {% if is_manager %}
-        {% if is_status_active %}
-        <div class="col-12">
-            <form method="post" action="{% url 'mailing:mailing_break' %}">
-                {% csrf_token %}
-                <button type="submit" class="mt-3 rounded text-center w-100 btn btn-outline-danger border border-secondary-subtle">Отключить рассылки</button>
-            </form>
-        </div>
-        {% else %}
-        <div class="col-12">
-            <form method="post" action="{% url 'mailing:mailing_start' %}">
-                {% csrf_token %}
-                <button type="submit" class="mt-3 rounded text-center w-100 btn btn-outline-success border border-secondary-subtle">Включить рассылки</button>
-            </form>
-        </div>
-        {% endif %}
-        {% endif %}
-    </div>
-    {% if mailings %}
-        <div class="row  text-center">
-            <div class="col-12 mt-1">
-                 <h4 class="mb-2 text-center mt-4"><img src="https://cdn-icons-png.flaticon.com/128/684/684835.png" style="width: auto; height: 25px;"><img src="https://cdn-icons-png.flaticon.com/128/684/684825.png" class="mx-1" style="width: auto; height: 25px;">Рассылки | Всего: {{ count }}</h4>
-            </div>
-            <div class="col-12 mt-1">
-                 <h4 class="mb-4 text-center mt-2">
-                     <a href="{% url 'mailing:mailing_list_created' %}" class="link-body-emphasis link-offset-2 link-underline link-underline-opacity-0">Созданные</a> | <a href="{% url 'mailing:mailing_list_active' %}" class="link-body-emphasis link-offset-2 link-underline link-underline-opacity-0">Актинвные</a> | <a href="{% url 'mailing:mailing_list_compleated' %}" class="link-body-emphasis link-offset-2 link-underline link-underline-opacity-0">Завершенные</a>
-                 </h4>
-            </div>
-                <div class="col-12">
-                    <div class="row">
-                        {% for mailing in mailings %}
-                        <div class="col-4 text-center">
-                            <h4 class="mt-2 text-center"></h4>
-                    <p class="text-start">
-                        <button class="rounded text-start w-100 btn btn-outline-light border border-secondary-subtle">
-                            <a  class="link-body-emphasis link-offset-2 link-underline link-underline-opacity-0" href="{% url 'mailing:mailing_detail' mailing.pk %}">
-                                <h6 class=" mt-2 text-success-emphasis">Тема письма:</h6>{{ mailing.message }} <h6 class=" mt-2 text-success-emphasis"></h6>
-                                <h6 class=" mt-2 text-success-emphasis">{{ mailing.status }}</h6>
-                                <h6 class=" mt-2 text-success-emphasis">{{ mailing.start_time|date:"d/m/Y" }} - {{ mailing.end_time|date:"d/m/Y" }}</h6></a></button> </p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-
-    {% endif %}
+<h2>Список сообщений</h2>
+<a href="{% url 'message_create' %}" class="btn btn-success">Добавить сообщение</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Тема</th>
+            <th>Текст</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for message in messages %}
+        <tr>
+            <td>{{ message.subject }}</td>
+            <td>{{ message.body }}</td>
+            <td>
+                <a href="{% url 'message_update' message.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'message_delete' message.pk %}" class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
