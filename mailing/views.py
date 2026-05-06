@@ -158,18 +158,6 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     template_name = "mailing/mailing_form.html"
     success_url = reverse_lazy("mailing:mailing_list")
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        return kwargs
-
-    def cleaen(self,**kwargs):
-        kwargs["user"] = self.request.user
-        user = kwargs.pop("user", None)
-        if user:
-            self.fields["recipients"].queryset = Recipient.objects.filter(owner=user)
-
-
-
 @method_decorator(cache_page(cachetime1), name="dispatch")
 class MessageDetailView(LoginRequiredMixin, DetailView):
     """Подробная информация о сообщении"""

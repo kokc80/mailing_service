@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from users.models import CustomUser
 from datetime import datetime, time, timezone
@@ -71,17 +70,6 @@ class Mailing(models.Model):
             self.status_active = Mailing.objects.filter(status_active=True).exists()
 
         super().save(*args, **kwargs)
-
-
-    def clean(self):
-        if not self.start_time and not isinstance(self.start_time, datetime):
-            raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
-
-        if not self.end_time and not isinstance(self.end_time, datetime):
-            raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
-
-        if self.start_time >= self.end_time:
-            raise ValidationError("Время начала должно быть меньше времени окончания.")
 
 
     def update_status(self):

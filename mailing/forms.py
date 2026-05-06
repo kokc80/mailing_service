@@ -1,5 +1,5 @@
 from django import forms
-
+from django.core.exceptions import ValidationError
 
 from .models import Recipient, Mailing, Message
 
@@ -22,7 +22,12 @@ class MailingForm(forms.ModelForm):
         fields = ["message", "recipients", "start_time", "end_time"]
 
     def __init__(self, *args, **kwargs):
+
+        user = kwargs.pop("user", None)
         super(MailingForm, self).__init__(*args, **kwargs)
+
+        if user:
+            self.fields["recipients"].queryset = Recipient.objects.filter(owner=user)
 
         self.fields["message"].widget.attrs.update({"class": "form-control", "placeholder": "Выберите сообщение"})
 
@@ -44,6 +49,16 @@ class MailingForm(forms.ModelForm):
             }
         )
 
+
+    def clean(self):
+        if not self.start_time and not isinstance(self.start_time, datetime):
+            raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
+
+        if not self.end_time and not isinstance(self.end_time, datetime):
+            raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
+
+        if self.start_time >= self.end_time:
+            raise ValidationError("Время начала должно быть меньше времени окончания.")
 
 class MessageForm(forms.ModelForm):
     class Meta:
