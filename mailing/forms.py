@@ -51,13 +51,13 @@ class MailingForm(forms.ModelForm):
 
 
     def clean(self):
-        if not self.start_time and not isinstance(self.start_time, datetime):
+        if not self.fields["start_time"] and not isinstance(self.fields["start_time"], datetime):
             raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
 
-        if not self.end_time and not isinstance(self.end_time, datetime):
+        if not self.fields["end_time"] and not isinstance(self.fields["end_time"], datetime):
             raise ValidationError("Неправильный формат даты. Используйте формат YYYY-MM-DD HH:MM.")
 
-        if self.start_time >= self.end_time:
+        if self.fields["start_time"] > self.fields["end_time"]:
             raise ValidationError("Время начала должно быть меньше времени окончания.")
 
 class MessageForm(forms.ModelForm):
