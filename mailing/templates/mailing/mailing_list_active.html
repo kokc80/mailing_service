@@ -6,7 +6,9 @@
     {% if mailings %}
         <div class="row  text-center">
             <div class="col-12 mt-1">
-                <h4 class="mb-2 text-center mt-4"><a href="{% url 'mailing:mailing_list' %}" ><img src="https://img.icons8.com/?size=160&id=CwALVGlLhZCp&format=png" style="width: auto; height: 37px;" class="mx-1" title="Вернуться к списку"></a>Активные рассылки | {{ count }}</h4>
+                <h4 class="mb-2 text-center mt-4"><a href="{% url 'mailing:mailing_list' %}" >
+                    <img src="https://img.icons8.com/?size=160&id=CwALVGlLhZCp&format=png" style="width: auto; height: 37px;" class="mx-1" title="Вернуться к списку">
+                </a>Активные рассылки | {{ count }}</h4>
             </div>
                 <div class="col-12">
                     <div class="row">

@@ -95,3 +95,18 @@ class Mailing(models.Model):
 
     def is_completed(self):
         return self.status == "Завершена"
+
+
+class SendAttempt(models.Model):
+    STATUS_CHOICES = [
+        ('Успешно', 'Успешно'),
+        ('Не успешно', 'Не успешно')
+    ]
+
+    attempt_time = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    server_response = models.TextField(blank=True)
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='send_attempts')
+
+    def __str__(self):
+        return f"Attempt: {self.attempt_time} - {self.status}"
