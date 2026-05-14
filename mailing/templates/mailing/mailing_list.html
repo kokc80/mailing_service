@@ -19,10 +19,15 @@
             <td>{{ mailing.message.subject }}</td>
             <td>{{ mailing.status }}</td>
             <td>
-                <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-warning">Редактировать</a>
-                <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-info">Отправить</a>
-                <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-danger">Удалить</a>
-            </td>
+                <form method="post" action="{% url 'mailing:send_mailing' mailing.pk  %}">>
+                    <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-warning">Редактировать</a>
+<!--                <a href="{% url 'mailing:send_mailing' mailing.pk %}" class="btn btn-info">Отправить</a>-->
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                    <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-danger">Удалить</a>
+                </form>
+          </td>
         </tr>
         {% endfor %}
     </tbody>

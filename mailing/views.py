@@ -251,7 +251,7 @@ class SendMailingView(generic.View):
                 send_mail(
                     mailing.message.subject,
                     mailing.message.body,
-                    'from@example.com',  # email from
+                    'npp80@yandex.ru',  # email from
                     [recipient.email],
                     fail_silently=False,
                 )
