@@ -274,7 +274,7 @@ class SendMailingView(generic.View):
             mailing.first_sent_at = timezone.now()
             mailing.save()
 
-        return render(request, 'mailing_status.html', {'mailing': mailing})
+        return render(request, 'mailing/mailing_status.html', {'mailing': mailing})
 
     def get_object(self, mailing_id):
         return Mailing.objects.get(id=mailing_id)
